@@ -1,0 +1,2398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ドライバー日報システム</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+            padding: 25px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .form-section h3 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group.full-width {
+            flex: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-item:hover {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+        }
+
+        .radio-item input[type="radio"]:checked + .radio-label {
+            color: #4a90e2;
+            font-weight: 600;
+        }
+
+        .radio-item:has(input[type="radio"]:checked) {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + .checkbox-label {
+            color: #4a90e2;
+            font-weight: 600;
+        }
+
+        .checkbox-item:has(input[type="checkbox"]:checked) {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        /* 時刻記録ボタンのスタイル */
+        .time-record-btn {
+            padding: 15px 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .time-record-btn.start {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .time-record-btn.end {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .time-record-btn.site {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .time-record-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .time-record-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .time-display {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4a90e2;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9ff;
+            border-radius: 8px;
+            border: 2px solid #e3f2fd;
+        }
+
+        /* 現場管理のスタイル */
+        .sites-container {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .sites-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .site-item {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            background: white;
+        }
+
+        .site-item.completed {
+            background: #f8f9fa;
+            opacity: 0.8;
+        }
+
+        .site-item:last-child {
+            border-bottom: none;
+        }
+
+        .site-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .site-status.in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .site-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .current-site {
+            border: 3px solid #4a90e2;
+            background: #f8f9ff;
+        }
+
+        /* 写真アップロード */
+        .photo-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .photo-upload-area:hover {
+            border-color: #4a90e2;
+            background: #f8f9ff;
+        }
+
+        .photo-upload-area.drag-over {
+            border-color: #4a90e2;
+            background: #e3f2fd;
+        }
+
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            min-height: 60px;
+            padding: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .photo-preview-grid:empty::before {
+            content: 'アップロードした写真がここに表示されます';
+            color: #999;
+            font-style: italic;
+            display: block;
+            text-align: center;
+            padding: 20px;
+            grid-column: 1 / -1;
+        }
+
+        .photo-preview {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .photo-preview .remove-photo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .photo-preview .photo-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 5px;
+            font-size: 0.75em;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        
+        .photo-upload-summary {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .photo-upload-summary .count {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        
+        .photo-type-label {
+            display: inline-block;
+            background: #4a90e2;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            margin-bottom: 5px;
+        }
+        
+        .clear-all-photos {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .clear-all-photos:hover {
+            background: #c82333;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table th {
+            background: #4a90e2;
+            color: white;
+            font-weight: 600;
+        }
+
+        .admin-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .status-submitted {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .driver-management {
+            margin-bottom: 30px;
+        }
+
+        .driver-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .driver-tag {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        .driver-tag .remove-btn {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-group {
+                min-width: auto;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .navigation {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .nav-btn {
+                width: 200px;
+                text-align: center;
+            }
+
+            .time-record-btn {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .photo-preview-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+            
+            .photo-preview img {
+                height: 120px;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-group input:required:invalid {
+            border-color: #dc3545;
+        }
+
+        .form-group input:required:valid {
+            border-color: #28a745;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* モーダルスタイル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .modal-close {
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4a90e2;
+        }
+
+        .detail-section h3 {
+            color: #4a90e2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-item .value {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .site-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .site-card:hover {
+            border-color: #4a90e2;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        .site-card-header {
+            background: #4a90e2;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .photo-gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .photo-gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .photo-gallery-item .pdf-preview {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .photo-gallery-item .pdf-preview .icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            font-size: 0.85em;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .btn-print {
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-print:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .inspection-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .inspection-badge {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* 画像拡大モーダル */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-modal.show {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-content, .modal-content * {
+                visibility: visible;
+            }
+            .modal-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                box-shadow: none;
+            }
+            .modal-close, .modal-actions {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .photo-gallery-item img,
+            .photo-gallery-item .pdf-preview {
+                height: 150px;
+            }
+        }
+
+        .paste-help {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ドライバー日報システム</h1>
+            <p>効率的な日報管理で安全運行をサポート</p>
+            <div class="navigation">
+                <button class="nav-btn active" onclick="showSection('driver')">日報入力</button>
+                <button class="nav-btn" onclick="showSection('admin')">管理者画面</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="driver-section" class="section active">
+                <form id="reportForm">
+                    <div class="form-section">
+                        <h3>基本情報</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="date">日付 <span class="required">*</span></label>
+                                <input type="date" id="date" name="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="driver">ドライバー名 <span class="required">*</span></label>
+                                <select id="driver" name="driver" required>
+                                    <option value="">選択してください</option>
+                                    <option value="田島">田島</option>
+                                    <option value="福田">福田</option>
+                                    <option value="内田">内田</option>
+                                    <option value="蛭川">蛭川</option>
+                                    <option value="田里">田里</option>
+                                    <option value="戸山">戸山</option>
+                                    <option value="松橋">松橋</option>
+                                    <option value="堀米">堀米</option>
+                                    <option value="小暮">小暮</option>
+                                    <option value="工藤">工藤</option>
+                                    <option value="比嘉">比嘉</option>
+                                    <option value="藤野">藤野</option>
+                                    <option value="西條">西條</option>
+                                    <option value="今井寿">今井寿</option>
+                                    <option value="今井清">今井清</option>
+                                    <option value="佐久間">佐久間</option>
+                                    <option value="羽鳥">羽鳥</option>
+                                    <option value="山中">山中</option>
+                                    <option value="風間">風間</option>
+                                    <option value="岩田">岩田</option>
+                                    <option value="橋本">橋本</option>
+                                    <option value="奥野">奥野</option>
+                                    <option value="石垣">石垣</option>
+                                    <option value="原田">原田</option>
+                                    <option value="髙橋">髙橋</option>
+                                    <option value="鈴木">鈴木</option>
+                                    <option value="佐藤">佐藤</option>
+                                    <option value="柳">柳</option>
+                                    <option value="福島">福島</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>体調 <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" id="condition-good" name="condition" value="良い" required>
+                                        <label for="condition-good" class="radio-label">良い</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="condition-normal" name="condition" value="普通" required>
+                                        <label for="condition-normal" class="radio-label">普通</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="condition-bad" name="condition" value="悪い" required>
+                                        <label for="condition-bad" class="radio-label">悪い</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>昨晩のアルコール摂取 <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" id="alcohol-yes" name="alcohol" value="飲んだ" required>
+                                        <label for="alcohol-yes" class="radio-label">飲んだ</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="alcohol-no" name="alcohol" value="飲んでいない" required>
+                                        <label for="alcohol-no" class="radio-label">飲んでいない</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>アルコール数値 <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" id="alcohol-level-zero" name="alcoholLevel" value="0.00" required>
+                                        <label for="alcohol-level-zero" class="radio-label">0.00</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" id="alcohol-level-over" name="alcoholLevel" value="0.00以上" required>
+                                        <label for="alcohol-level-over" class="radio-label">0.00以上</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>業務開始記録</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>業務開始</label>
+                                <button type="button" class="time-record-btn start" onclick="recordStartTime()">
+                                    📍 直行
+                                </button>
+                                <div id="startTimeDisplay" class="time-display hidden"></div>
+                                <input type="hidden" id="startTime" name="startTime">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>現場情報</h3>
+                        <div class="sites-container">
+                            <div class="sites-header">回収現場一覧</div>
+                            <div id="sitesContainer"></div>
+                            <div class="site-item current-site" id="currentSite">
+                                <div class="site-status in-progress">作業中</div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <button type="button" class="time-record-btn site" onclick="recordSiteArrival()">
+                                            🚛 現場到着
+                                        </button>
+                                        <div id="currentSiteArrivalDisplay" class="time-display hidden"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="currentSiteName">現場名 <span class="required">*</span></label>
+                                        <textarea id="currentSiteName" rows="2" placeholder="LINEからコピー&ペーストできます&#10;例：○○工場 東京都渋谷区○○1-2-3"></textarea>
+                                        <div class="paste-help">💡 LINEの現場情報をそのまま貼り付けできます</div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="currentVehicleNumber">車両ナンバー（下4桁） <span class="required">*</span></label>
+                                        <input type="text" id="currentVehicleNumber" placeholder="1234" maxlength="4" pattern="[0-9]{4}">
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="time-record-btn end" onclick="completeSite()" id="completeSiteBtn" disabled>
+                                            ✅ 現場終了
+                                        </button>
+                                        <div id="currentSiteEndDisplay" class="time-display hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>処理場情報</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="facilityName">処理場名 <span class="required">*</span></label>
+                                <select id="facilityName" name="facilityName" required>
+                                    <option value="">選択してください</option>
+                                    <option value="石坂">石坂</option>
+                                    <option value="GL">GL</option>
+                                    <option value="関口">関口</option>
+                                    <option value="シタラ">シタラ</option>
+                                    <option value="ダイヤ">ダイヤ</option>
+                                    <option value="亀井">亀井</option>
+                                    <option value="貴藤">貴藤</option>
+                                    <option value="PSC">PSC</option>
+                                    <option value="友伸">友伸</option>
+                                    <option value="友和">友和</option>
+                                    <option value="コーエイ">コーエイ</option>
+                                    <option value="クツカタ">クツカタ</option>
+                                    <option value="明盛">明盛</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>処理場到着</label>
+                                <button type="button" class="time-record-btn site" onclick="recordFacilityArrival()">
+                                    🏭 処理場到着
+                                </button>
+                                <div id="facilityArrivalDisplay" class="time-display hidden"></div>
+                                <input type="hidden" id="facilityArrivalTime" name="facilityArrivalTime">
+                            </div>
+                            <div class="form-group">
+                                <label>荷下ろし完了</label>
+                                <button type="button" class="time-record-btn end" onclick="recordFacilityEnd()" id="facilityEndBtn" disabled>
+                                    ✅ 荷下ろし完了
+                                </button>
+                                <div id="facilityEndDisplay" class="time-display hidden"></div>
+                                <input type="hidden" id="facilityEndTime" name="facilityEndTime">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="facilityVehicleNumber">車両ナンバー（下4桁） <span class="required">*</span></label>
+                                <input type="text" id="facilityVehicleNumber" name="facilityVehicleNumber" placeholder="1234" maxlength="4" pattern="[0-9]{4}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>産業廃棄物関連書類</h3>
+                        <p style="margin-bottom: 15px; color: #666;">回収伝票・マニフェストの写真を何枚でもアップロードできます</p>
+                        
+                        <div class="photo-upload-summary" id="photoUploadSummary">
+                            <div class="count">アップロード済み: <span id="photoCount">0</span>枚</div>
+                            <div style="margin-top: 8px; color: #666;">伝票やマニフェストをどんどん追加してください
+                                <button type="button" class="clear-all-photos" onclick="clearAllPhotos()" id="clearPhotosBtn" style="display: none;">全て削除</button>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()">
+                            <div style="font-size: 3em; margin-bottom: 15px;">📄</div>
+                            <div style="font-size: 1.2em; margin-bottom: 10px;">写真を追加アップロード</div>
+                            <div style="color: #666; margin-bottom: 8px;">クリックするか、ファイルをドラッグ&ドロップ</div>
+                            <div style="color: #999; font-size: 0.9em;">対応形式: JPG, PNG, PDF ・ 何枚でもOK</div>
+                        </div>
+                        
+                        <input type="file" id="photoInput" multiple accept="image/*,.pdf" style="display: none;">
+                        
+                        <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>日常点検項目</h3>
+                        <p style="margin-bottom: 15px; color: #666;">実施した点検項目にチェックを入れてください</p>
+                        <div class="checkbox-grid">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="cleaning-interior" name="inspection" value="車内清掃">
+                                <label for="cleaning-interior" class="checkbox-label">車内清掃</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="cleaning-cargo" name="inspection" value="荷台清掃">
+                                <label for="cleaning-cargo" class="checkbox-label">荷台清掃</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="refuel" name="inspection" value="給油">
+                                <label for="refuel" class="checkbox-label">給油</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="tire-check" name="inspection" value="タイヤ目視点検">
+                                <label for="tire-check" class="checkbox-label">タイヤ目視点検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="damage-check" name="inspection" value="キズ・へこみ確認">
+                                <label for="damage-check" class="checkbox-label">キズ・へこみ確認</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="lifting-gear-check" name="inspection" value="吊り具確認">
+                                <label for="lifting-gear-check" class="checkbox-label">吊り具確認</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>業務終了記録</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>業務終了</label>
+                                <button type="button" class="time-record-btn end" onclick="recordEndTime()" id="endBtn" disabled>
+                                    🏁 直帰
+                                </button>
+                                <div id="endTimeDisplay" class="time-display hidden"></div>
+                                <input type="hidden" id="endTime" name="endTime">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">クリア</button>
+                        <button type="submit" class="btn btn-primary">日報を提出</button>
+                    </div>
+                </form>
+
+                <div id="alert-container"></div>
+            </div>
+
+            <div id="admin-section" class="section">
+                <div class="driver-management">
+                    <h3>ドライバー管理</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newDriverName">新しいドライバー名</label>
+                            <input type="text" id="newDriverName" placeholder="ドライバー名を入力">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="addDriver()">追加</button>
+                        </div>
+                    </div>
+                    <div class="driver-list" id="driverList"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filterDate">日付で絞り込み</label>
+                        <input type="date" id="filterDate" onchange="filterReports()">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterDriver">ドライバーで絞り込み</label>
+                        <select id="filterDriver" onchange="filterReports()">
+                            <option value="">全てのドライバー</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary" onclick="exportData()">CSVエクスポート</button>
+                    </div>
+                </div>
+
+                <table class="admin-table" id="reportsTable">
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>ドライバー名</th>
+                            <th>体調</th>
+                            <th>アルコール</th>
+                            <th>業務開始</th>
+                            <th>業務終了</th>
+                            <th>現場数</th>
+                            <th>詳細</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // データ管理
+        let drivers = JSON.parse(localStorage.getItem('drivers')) || ['田島', '福田', '内田', '蛭川', '田里', '戸山', '松橋', '堀米', '小暮', '工藤', '比嘉', '藤野', '西條', '今井寿', '今井清', '佐久間', '羽鳥', '山中', '風間', '岩田', '橋本', '奥野', '石垣', '原田', '髙橋', '鈴木', '佐藤', '柳', '福島'];
+        let reports = JSON.parse(localStorage.getItem('reports')) || [];
+        
+        // 現在の日報データ
+        let currentReport = {
+            sites: [],
+            photos: [],
+            locationData: {}
+        };
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 今日の日付を設定
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            
+            // ドライバー一覧を更新
+            updateDriverSelects();
+            updateDriverList();
+            
+            // 管理者画面のレポート表示
+            displayReports();
+            
+            // 写真アップロード関連のイベント設定
+            setupPhotoUpload();
+            
+            // 現場入力の検証
+            setupSiteValidation();
+        });
+
+        // セクション切り替え
+        function showSection(section) {
+            // ナビゲーションボタンの状態更新
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // セクション表示切り替え
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(section + '-section').classList.add('active');
+
+            if (section === 'admin') {
+                displayReports();
+            }
+        }
+
+
+        // 位置情報取得関数
+        function getLocation(callback) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const locationData = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date().toISOString()
+                        };
+                        callback(locationData);
+                    },
+                    function(error) {
+                        console.error('位置情報取得エラー:', error);
+                        callback(null);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                console.error('位置情報がサポートされていません');
+                callback(null);
+            }
+        }
+
+        // Google Maps URLを生成
+        function generateMapUrl(lat, lng) {
+            return `https://www.google.com/maps?q=${lat},${lng}`;
+        }
+
+        // 時刻記録関数
+        function recordStartTime() {
+            const now = new Date();
+            const timeString = now.toTimeString().slice(0, 5);
+            
+            // 位置情報を取得
+            getLocation(function(location) {
+                document.getElementById('startTime').value = timeString;
+                
+                if (location) {
+                    currentReport.locationData.start = location;
+                    document.getElementById('startTimeDisplay').innerHTML = `
+                        開始時刻: ${timeString}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                } else {
+                    document.getElementById('startTimeDisplay').textContent = `開始時刻: ${timeString} (位置情報取得失敗)`;
+                }
+                
+                document.getElementById('startTimeDisplay').classList.remove('hidden');
+                
+                // 終了ボタンを有効化
+                document.getElementById('endBtn').disabled = false;
+                
+                showAlert(location ? '業務開始時刻と位置情報を記録しました' : '業務開始時刻を記録しました（位置情報取得失敗）', 'success');
+            });
+        }
+
+        function recordEndTime() {
+            const now = new Date();
+            const timeString = now.toTimeString().slice(0, 5);
+            
+            // 位置情報を取得
+            getLocation(function(location) {
+                document.getElementById('endTime').value = timeString;
+                
+                if (location) {
+                    currentReport.locationData.end = location;
+                    document.getElementById('endTimeDisplay').innerHTML = `
+                        終了時刻: ${timeString}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                } else {
+                    document.getElementById('endTimeDisplay').textContent = `終了時刻: ${timeString} (位置情報取得失敗)`;
+                }
+                
+                document.getElementById('endTimeDisplay').classList.remove('hidden');
+                
+                showAlert(location ? '業務終了時刻と位置情報を記録しました' : '業務終了時刻を記録しました（位置情報取得失敗）', 'success');
+            });
+        }
+
+        function recordFacilityArrival() {
+            const now = new Date();
+            const timeString = now.toTimeString().slice(0, 5);
+            
+            // 位置情報を取得
+            getLocation(function(location) {
+                document.getElementById('facilityArrivalTime').value = timeString;
+                
+                if (location) {
+                    currentReport.locationData.facilityArrival = location;
+                    document.getElementById('facilityArrivalDisplay').innerHTML = `
+                        到着時刻: ${timeString}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                } else {
+                    document.getElementById('facilityArrivalDisplay').textContent = `到着時刻: ${timeString} (位置情報取得失敗)`;
+                }
+                
+                document.getElementById('facilityArrivalDisplay').classList.remove('hidden');
+                
+                // 荷下ろし完了ボタンを有効化
+                document.getElementById('facilityEndBtn').disabled = false;
+                
+                showAlert(location ? '処理場到着時刻と位置情報を記録しました' : '処理場到着時刻を記録しました（位置情報取得失敗）', 'success');
+            });
+        }
+
+        function recordFacilityEnd() {
+            const now = new Date();
+            const timeString = now.toTimeString().slice(0, 5);
+            
+            // 位置情報を取得
+            getLocation(function(location) {
+                document.getElementById('facilityEndTime').value = timeString;
+                
+                if (location) {
+                    currentReport.locationData.facilityEnd = location;
+                    document.getElementById('facilityEndDisplay').innerHTML = `
+                        完了時刻: ${timeString}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                } else {
+                    document.getElementById('facilityEndDisplay').textContent = `完了時刻: ${timeString} (位置情報取得失敗)`;
+                }
+                
+                document.getElementById('facilityEndDisplay').classList.remove('hidden');
+                
+                showAlert(location ? '荷下ろし完了時刻と位置情報を記録しました' : '荷下ろし完了時刻を記録しました（位置情報取得失敗）', 'success');
+            });
+        }
+
+        function recordSiteArrival() {
+            const now = new Date();
+            const timeString = now.toTimeString().slice(0, 5);
+            
+            // 位置情報を取得
+            getLocation(function(location) {
+                if (location) {
+                    currentReport.currentSiteArrivalLocation = location;
+                    document.getElementById('currentSiteArrivalDisplay').innerHTML = `
+                        到着時刻: ${timeString}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                } else {
+                    document.getElementById('currentSiteArrivalDisplay').textContent = `到着時刻: ${timeString} (位置情報取得失敗)`;
+                }
+                
+                document.getElementById('currentSiteArrivalDisplay').classList.remove('hidden');
+                
+                // 現場終了ボタンを有効化
+                document.getElementById('completeSiteBtn').disabled = false;
+                
+                // 現場データに到着時刻を記録
+                currentReport.currentSiteArrival = timeString;
+                
+                showAlert(location ? '現場到着時刻と位置情報を記録しました' : '現場到着時刻を記録しました（位置情報取得失敗）', 'success');
+            });
+        }
+
+        // 現場完了処理
+        function completeSite() {
+            const siteName = document.getElementById('currentSiteName').value.trim();
+            const vehicleNumber = document.getElementById('currentVehicleNumber').value.trim();
+            
+            if (!siteName) {
+                showAlert('現場名を入力してください', 'error');
+                return;
+            }
+            
+            if (!vehicleNumber || vehicleNumber.length !== 4) {
+                showAlert('車両ナンバー（4桁）を正しく入力してください', 'error');
+                return;
+            }
+            
+            if (!currentReport.currentSiteArrival) {
+                showAlert('現場到着時刻を先に記録してください', 'error');
+                return;
+            }
+            
+            const now = new Date();
+            const endTime = now.toTimeString().slice(0, 5);
+            
+            // 位置情報を取得（終了時）
+            getLocation(function(endLocation) {
+                // 完了した現場をリストに追加
+                const siteData = {
+                    arrivalTime: currentReport.currentSiteArrival,
+                    siteName: siteName,
+                    endTime: endTime,
+                    vehicleNumber: vehicleNumber,
+                    completedAt: now.toISOString(),
+                    arrivalLocation: currentReport.currentSiteArrivalLocation || null,
+                    endLocation: endLocation
+                };
+                
+                currentReport.sites.push(siteData);
+                
+                // 完了現場を表示
+                displayCompletedSites();
+                
+                // 現在の現場をリセット
+                resetCurrentSite();
+                
+                showAlert(endLocation ? `現場「${siteName}」を完了しました（位置情報記録済み）` : `現場「${siteName}」を完了しました`, 'success');
+            });
+        }
+
+        // 完了した現場の表示
+        function displayCompletedSites() {
+            const container = document.getElementById('sitesContainer');
+            container.innerHTML = '';
+            
+            currentReport.sites.forEach((site, index) => {
+                const siteDiv = document.createElement('div');
+                siteDiv.className = 'site-item completed';
+                siteDiv.innerHTML = `
+                    <div class="site-status completed">完了 #${index + 1}</div>
+                    <div><strong>現場名:</strong> ${site.siteName}</div>
+                    <div><strong>到着時刻:</strong> ${site.arrivalTime} → <strong>終了時刻:</strong> ${site.endTime}</div>
+                    <div><strong>車両ナンバー:</strong> ****${site.vehicleNumber}</div>
+                `;
+                container.appendChild(siteDiv);
+            });
+        }
+
+        // 現在の現場をリセット
+        function resetCurrentSite() {
+            document.getElementById('currentSiteName').value = '';
+            document.getElementById('currentVehicleNumber').value = '';
+            document.getElementById('currentSiteArrivalDisplay').classList.add('hidden');
+            document.getElementById('currentSiteEndDisplay').classList.add('hidden');
+            document.getElementById('completeSiteBtn').disabled = true;
+            
+            currentReport.currentSiteArrival = null;
+            currentReport.currentSiteArrivalLocation = null;
+        }
+
+        // 現場入力の検証設定
+        function setupSiteValidation() {
+            const siteNameInput = document.getElementById('currentSiteName');
+            const vehicleInput = document.getElementById('currentVehicleNumber');
+            const facilityVehicleInput = document.getElementById('facilityVehicleNumber');
+            
+            // 車両ナンバーは数字のみ受け付け
+            vehicleInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+            
+            facilityVehicleInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+        }
+
+        // 写真アップロード設定
+        function setupPhotoUpload() {
+            const photoInput = document.getElementById('photoInput');
+            const uploadArea = document.getElementById('photoUploadArea');
+            
+            // ファイル選択時の処理
+            photoInput.addEventListener('change', function(e) {
+                handleFiles(e.target.files);
+            });
+            
+            // ドラッグ&ドロップの処理
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+        }
+
+        // ファイル処理
+        function handleFiles(files) {
+            let validFiles = 0;
+            let invalidFiles = 0;
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/') || file.type === 'application/pdf') {
+                    validFiles++;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photoData = {
+                            name: file.name,
+                            type: file.type,
+                            data: e.target.result,
+                            size: file.size,
+                            uploadedAt: new Date().toISOString()
+                        };
+                        
+                        currentReport.photos.push(photoData);
+                        displayPhotoPreview();
+                        updatePhotoCount();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    invalidFiles++;
+                }
+            });
+            
+            if (validFiles > 0) {
+                showAlert(`${validFiles}枚の写真をアップロードしました`, 'success');
+            }
+            if (invalidFiles > 0) {
+                showAlert(`${invalidFiles}枚のファイルがスキップされました（JPG, PNG, PDFのみ対応）`, 'error');
+            }
+        }
+
+        // 写真プレビュー表示
+        function displayPhotoPreview() {
+            const grid = document.getElementById('photoPreviewGrid');
+            grid.innerHTML = '';
+            
+            currentReport.photos.forEach((photo, index) => {
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'photo-preview';
+                
+                // ファイルタイプの判定
+                const isManifest = photo.name.toLowerCase().includes('マニフェスト') || 
+                                 photo.name.toLowerCase().includes('manifest');
+                const isReceipt = photo.name.toLowerCase().includes('伝票') || 
+                                photo.name.toLowerCase().includes('レシート') || 
+                                photo.name.toLowerCase().includes('receipt');
+                
+                let typeLabel = '書類';
+                if (isManifest) typeLabel = 'マニフェスト';
+                else if (isReceipt) typeLabel = '伝票';
+                
+                if (photo.type.startsWith('image/')) {
+                    previewDiv.innerHTML = `
+                        <div class="photo-type-label">${typeLabel}</div>
+                        <img src="${photo.data}" alt="${photo.name}">
+                        <button class="remove-photo" onclick="removePhoto(${index})">×</button>
+                        <div class="photo-label">${photo.name}</div>
+                    `;
+                } else if (photo.type === 'application/pdf') {
+                    previewDiv.innerHTML = `
+                        <div class="photo-type-label">${typeLabel}</div>
+                        <div style="width: 100%; height: 140px; background: #f8f9fa; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 2px solid #dee2e6;">
+                            <div style="font-size: 2.5em;">📄</div>
+                            <div style="font-size: 0.75em; text-align: center; padding: 5px; word-wrap: break-word;">${photo.name}</div>
+                        </div>
+                        <button class="remove-photo" onclick="removePhoto(${index})">×</button>
+                    `;
+                }
+                
+                grid.appendChild(previewDiv);
+            });
+        }
+
+        // 写真削除
+        function removePhoto(index) {
+            const photoName = currentReport.photos[index].name;
+            currentReport.photos.splice(index, 1);
+            displayPhotoPreview();
+            updatePhotoCount();
+            showAlert(`「${photoName}」を削除しました`, 'success');
+        }
+        
+        // 全写真削除
+        function clearAllPhotos() {
+            if (currentReport.photos.length === 0) {
+                showAlert('削除する写真がありません', 'error');
+                return;
+            }
+            
+            if (confirm(`${currentReport.photos.length}枚の写真を全て削除しますか？`)) {
+                const count = currentReport.photos.length;
+                currentReport.photos = [];
+                displayPhotoPreview();
+                updatePhotoCount();
+                showAlert(`${count}枚の写真を全て削除しました`, 'success');
+            }
+        }
+        
+        // 写真数更新
+        function updatePhotoCount() {
+            const count = currentReport.photos.length;
+            document.getElementById('photoCount').textContent = count;
+            
+            const clearBtn = document.getElementById('clearPhotosBtn');
+            if (count > 0) {
+                clearBtn.style.display = 'inline-block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        }
+
+        // ドライバー選択肢を更新
+        function updateDriverSelects() {
+            const driverSelect = document.getElementById('driver');
+            const filterDriverSelect = document.getElementById('filterDriver');
+            
+            // 既存オプションをクリア（最初のオプションは残す）
+            driverSelect.innerHTML = '<option value="">選択してください</option>';
+            filterDriverSelect.innerHTML = '<option value="">全てのドライバー</option>';
+            
+            drivers.forEach(driver => {
+                const option1 = document.createElement('option');
+                option1.value = driver;
+                option1.textContent = driver;
+                driverSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = driver;
+                option2.textContent = driver;
+                filterDriverSelect.appendChild(option2);
+            });
+        }
+
+        // ドライバー追加
+        function addDriver() {
+            const nameInput = document.getElementById('newDriverName');
+            const name = nameInput.value.trim();
+            
+            if (name && !drivers.includes(name)) {
+                drivers.push(name);
+                localStorage.setItem('drivers', JSON.stringify(drivers));
+                updateDriverSelects();
+                updateDriverList();
+                nameInput.value = '';
+                showAlert('ドライバーを追加しました', 'success');
+            } else if (drivers.includes(name)) {
+                showAlert('そのドライバーは既に登録されています', 'error');
+            } else {
+                showAlert('ドライバー名を入力してください', 'error');
+            }
+        }
+
+        // ドライバー削除
+        function removeDriver(name) {
+            if (confirm(`「${name}」を削除しますか？`)) {
+                drivers = drivers.filter(driver => driver !== name);
+                localStorage.setItem('drivers', JSON.stringify(drivers));
+                updateDriverSelects();
+                updateDriverList();
+                showAlert('ドライバーを削除しました', 'success');
+            }
+        }
+
+        // ドライバー一覧表示更新
+        function updateDriverList() {
+            const driverList = document.getElementById('driverList');
+            driverList.innerHTML = '';
+            
+            drivers.forEach(driver => {
+                const tag = document.createElement('div');
+                tag.className = 'driver-tag';
+                tag.innerHTML = `
+                    ${driver}
+                    <span class="remove-btn" onclick="removeDriver('${driver}')">&times;</span>
+                `;
+                driverList.appendChild(tag);
+            });
+        }
+
+        // フォーム送信
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 基本的な検証
+            if (currentReport.sites.length === 0) {
+                showAlert('少なくとも1つの現場を完了してください', 'error');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const report = {};
+            
+            // 基本データの取得
+            for (let [key, value] of formData.entries()) {
+                if (key === 'inspection') {
+                    if (!report.inspection) report.inspection = [];
+                    report.inspection.push(value);
+                } else {
+                    report[key] = value;
+                }
+            }
+            
+            // 点検項目がない場合は空配列を設定
+            if (!report.inspection) {
+                report.inspection = [];
+            }
+            
+            // 現場データと写真データ、位置情報を追加
+            report.sites = currentReport.sites;
+            report.photos = currentReport.photos;
+            report.locationData = currentReport.locationData;
+            
+            // 提出日時を追加
+            report.submittedAt = new Date().toISOString();
+            
+            // 同じ日付・ドライバーの既存レポートをチェック
+            const existingIndex = reports.findIndex(r => 
+                r.date === report.date && r.driver === report.driver
+            );
+            
+            if (existingIndex !== -1) {
+                if (confirm('同じ日付の日報が既に存在します。上書きしますか？')) {
+                    reports[existingIndex] = report;
+                } else {
+                    return;
+                }
+            } else {
+                reports.push(report);
+            }
+            
+            // ローカルストレージに保存
+            localStorage.setItem('reports', JSON.stringify(reports));
+            
+            // Excel形式で自動エクスポート
+            try {
+                autoExportToExcel(report);
+                showAlert('日報を提出し、Excel集計ファイルをダウンロードしました', 'success');
+            } catch (error) {
+                console.error('エクスポートエラー:', error);
+                showAlert('日報を提出しました（ファイルダウンロードは手動で行ってください）', 'success');
+            }
+            
+            clearForm();
+        });
+
+        // フォームクリア
+        function clearForm() {
+            document.getElementById('reportForm').reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            
+            // 時刻表示をリセット
+            document.querySelectorAll('.time-display').forEach(el => el.classList.add('hidden'));
+            document.getElementById('endBtn').disabled = true;
+            document.getElementById('facilityEndBtn').disabled = true;
+            
+            // 現場データをリセット
+            currentReport = { sites: [], photos: [], locationData: {} };
+            document.getElementById('sitesContainer').innerHTML = '';
+            resetCurrentSite();
+            
+            // 写真プレビューをクリア
+            displayPhotoPreview();
+            updatePhotoCount();
+        }
+
+        // アラート表示
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // レポート表示
+        function displayReports() {
+            const tbody = document.getElementById('reportsTableBody');
+            tbody.innerHTML = '';
+            
+            const filteredReports = getFilteredReports();
+            
+            if (filteredReports.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #999;">日報データがありません</td></tr>';
+                return;
+            }
+            
+            filteredReports.forEach(report => {
+                const row = document.createElement('tr');
+                const siteCount = report.sites ? report.sites.length : 0;
+                row.innerHTML = `
+                    <td>${report.date}</td>
+                    <td>${report.driver}</td>
+                    <td>${report.condition}</td>
+                    <td>${report.alcohol}</td>
+                    <td>${report.startTime}</td>
+                    <td>${report.endTime}</td>
+                    <td>${siteCount}箇所</td>
+                    <td><button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8em;" onclick="showReportDetailModal('${report.submittedAt}')">詳細</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // フィルタリング
+        function getFilteredReports() {
+            const filterDate = document.getElementById('filterDate').value;
+            const filterDriver = document.getElementById('filterDriver').value;
+            
+            return reports.filter(report => {
+                const dateMatch = !filterDate || report.date === filterDate;
+                const driverMatch = !filterDriver || report.driver === filterDriver;
+                return dateMatch && driverMatch;
+            }).sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        // フィルター適用
+        function filterReports() {
+            displayReports();
+        }
+
+        // 詳細表示（モーダル）
+        function showReportDetailModal(submittedAt) {
+            const report = reports.find(r => r.submittedAt === submittedAt);
+            if (!report) return;
+            
+            // モーダルHTML生成
+            let modalHTML = `
+                <div id="detailModal" class="modal show">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>📋 日報詳細 - ${report.date} (${report.driver})</h2>
+                            <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 基本情報 -->
+                            <div class="detail-section">
+                                <h3>👤 基本情報</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>日付</label>
+                                        <div class="value">${report.date}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>ドライバー名</label>
+                                        <div class="value">${report.driver}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>体調</label>
+                                        <div class="value">${report.condition}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>昨晩のアルコール摂取</label>
+                                        <div class="value">${report.alcohol}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>アルコール数値</label>
+                                        <div class="value">${report.alcoholLevel}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>業務開始時間</label>
+                                        <div class="value">${report.startTime}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>業務終了時間</label>
+                                        <div class="value">${report.endTime}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>提出日時</label>
+                                        <div class="value">${new Date(report.submittedAt).toLocaleString('ja-JP')}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 現場情報 -->
+                            <div class="detail-section">
+                                <h3>🏗️ 現場情報（${report.sites ? report.sites.length : 0}箇所）</h3>
+            `;
+            
+            if (report.sites && report.sites.length > 0) {
+                report.sites.forEach((site, index) => {
+                    modalHTML += `
+                        <div class="site-card">
+                            <div class="site-card-header">現場 ${index + 1}</div>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>現場名</label>
+                                    <div class="value">${site.siteName}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>到着時刻</label>
+                                    <div class="value">${site.arrivalTime}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>終了時刻</label>
+                                    <div class="value">${site.endTime}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>車両ナンバー</label>
+                                    <div class="value">****${site.vehicleNumber}</div>
+                                </div>
+                    `;
+                    
+                    // 現場到着の位置情報
+                    if (site.arrivalLocation) {
+                        const loc = site.arrivalLocation;
+                        modalHTML += `
+                                <div class="detail-item">
+                                    <label>📍 到着地点</label>
+                                    <div class="value">
+                                        <a href="${generateMapUrl(loc.latitude, loc.longitude)}" target="_blank" style="color: #4a90e2; text-decoration: none;">
+                                            Googleマップで開く
+                                        </a>
+                                    </div>
+                                </div>
+                        `;
+                    }
+                    
+                    // 現場終了の位置情報
+                    if (site.endLocation) {
+                        const loc = site.endLocation;
+                        modalHTML += `
+                                <div class="detail-item">
+                                    <label>📍 終了地点</label>
+                                    <div class="value">
+                                        <a href="${generateMapUrl(loc.latitude, loc.longitude)}" target="_blank" style="color: #4a90e2; text-decoration: none;">
+                                            Googleマップで開く
+                                        </a>
+                                    </div>
+                                </div>
+                        `;
+                    }
+                    
+                    modalHTML += `
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                modalHTML += '<div class="no-data">現場情報がありません</div>';
+            }
+            
+            modalHTML += `
+                            </div>
+
+                            <!-- 処理場情報 -->
+                            <div class="detail-section">
+                                <h3>🏭 処理場情報</h3>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>処理場名</label>
+                                        <div class="value">${report.facilityName || '未記入'}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>到着時刻</label>
+                                        <div class="value">${report.facilityArrivalTime}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>荷下ろし完了時刻</label>
+                                        <div class="value">${report.facilityEndTime}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>車両ナンバー</label>
+                                        <div class="value">****${report.facilityVehicleNumber}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 日常点検 -->
+                            <div class="detail-section">
+                                <h3>✅ 日常点検項目</h3>
+            `;
+            
+            if (report.inspection && report.inspection.length > 0) {
+                modalHTML += '<div class="inspection-badges">';
+                report.inspection.forEach(item => {
+                    modalHTML += `<div class="inspection-badge">✓ ${item}</div>`;
+                });
+                modalHTML += '</div>';
+            } else {
+                modalHTML += '<div class="no-data">点検項目がチェックされていません</div>';
+            }
+            
+            modalHTML += `
+                            </div>
+
+                            <!-- 写真ギャラリー -->
+                            <div class="detail-section">
+                                <h3>📸 アップロード写真（${report.photos ? report.photos.length : 0}枚）</h3>
+            `;
+            
+            if (report.photos && report.photos.length > 0) {
+                modalHTML += '<div class="photo-gallery">';
+                report.photos.forEach((photo, index) => {
+                    if (photo.type.startsWith('image/')) {
+                        modalHTML += `
+                            <div class="photo-gallery-item" onclick="showImageModal('${photo.data}')">
+                                <img src="${photo.data}" alt="${photo.name}">
+                                <div class="photo-caption">${photo.name}</div>
+                            </div>
+                        `;
+                    } else if (photo.type === 'application/pdf') {
+                        modalHTML += `
+                            <div class="photo-gallery-item">
+                                <div class="pdf-preview">
+                                    <div class="icon">📄</div>
+                                    <div>PDF</div>
+                                </div>
+                                <div class="photo-caption">${photo.name}</div>
+                            </div>
+                        `;
+                    }
+                });
+                modalHTML += '</div>';
+            } else {
+                modalHTML += '<div class="no-data">アップロードされた写真がありません</div>';
+            }
+            
+            modalHTML += `
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-print" onclick="printReport()">🖨️ 印刷</button>
+                            <button class="btn btn-secondary" onclick="closeDetailModal()">閉じる</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // モーダルを追加
+            const existingModal = document.getElementById('detailModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // モーダルを閉じる
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+
+        // 画像拡大モーダル
+        function showImageModal(imageSrc) {
+            let imageModalHTML = `
+                <div id="imageModal" class="image-modal show" onclick="closeImageModal()">
+                    <span class="image-modal-close">&times;</span>
+                    <img src="${imageSrc}" alt="拡大画像">
+                </div>
+            `;
+            
+            const existingImageModal = document.getElementById('imageModal');
+            if (existingImageModal) {
+                existingImageModal.remove();
+            }
+            
+            document.body.insertAdjacentHTML('beforeend', imageModalHTML);
+        }
+
+        // 画像モーダルを閉じる
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+
+        // 印刷
+        function printReport() {
+            window.print();
+        }
+
+        // モーダル外クリックで閉じる
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('detailModal');
+            if (modal && event.target === modal) {
+                closeDetailModal();
+            }
+        });
+
+        // CSVエクスポート
+        function exportData() {
+            const filteredReports = getFilteredReports();
+            
+            if (filteredReports.length === 0) {
+                showAlert('エクスポートするデータがありません', 'error');
+                return;
+            }
+            
+            let csv = '\uFEFF'; // BOM for UTF-8
+            csv += '日付,ドライバー名,体調,昨晩のアルコール摂取,アルコール数値,業務開始時間,業務終了時間,';
+            csv += '現場数,現場詳細,処理場名,処理場到着時間,荷下ろし終了時間,処理場車両ナンバー,日常点検項目,写真枚数,提出日時\n';
+            
+            filteredReports.forEach(report => {
+                const inspections = report.inspection ? report.inspection.join('・') : '';
+                const siteCount = report.sites ? report.sites.length : 0;
+                const photoCount = report.photos ? report.photos.length : 0;
+                
+                let siteDetails = '';
+                if (report.sites) {
+                    siteDetails = report.sites.map((site, index) => 
+                        `現場${index + 1}:${site.siteName}(${site.arrivalTime}-${site.endTime})`
+                    ).join('|');
+                }
+                
+                csv += `"${report.date}","${report.driver}","${report.condition}","${report.alcohol}","${report.alcoholLevel}",`;
+                csv += `"${report.startTime}","${report.endTime}","${siteCount}","${siteDetails}",`;
+                csv += `"${report.facilityName || ''}","${report.facilityArrivalTime}","${report.facilityEndTime}","****${report.facilityVehicleNumber}",`;
+                csv += `"${inspections}","${photoCount}","${new Date(report.submittedAt).toLocaleString('ja-JP')}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ドライバー日報_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showAlert('CSVファイルをダウンロードしました', 'success');
+        }
+        
+        // Excel形式でエクスポート（日報提出時に自動実行）
+        function autoExportToExcel(report) {
+            // 既存の全データを取得
+            const allReports = reports;
+            
+            // Excel互換のCSVを生成
+            let csv = '\uFEFF'; // BOM for UTF-8 (Excelで正しく開くため)
+            csv += '日付,ドライバー名,体調,昨晩のアルコール摂取,アルコール数値,業務開始時間,業務終了時間,';
+            csv += '現場数,現場詳細,処理場名,処理場到着時間,荷下ろし終了時間,処理場車両ナンバー,日常点検項目,写真枚数,提出日時\n';
+            
+            // 全日報データをCSVに追加
+            allReports.forEach(r => {
+                const inspections = r.inspection ? r.inspection.join('・') : '';
+                const siteCount = r.sites ? r.sites.length : 0;
+                const photoCount = r.photos ? r.photos.length : 0;
+                
+                let siteDetails = '';
+                if (r.sites) {
+                    siteDetails = r.sites.map((site, index) => 
+                        `現場${index + 1}:${site.siteName}(${site.arrivalTime}-${site.endTime})`
+                    ).join('|');
+                }
+                
+                csv += `"${r.date}","${r.driver}","${r.condition}","${r.alcohol}","${r.alcoholLevel}",`;
+                csv += `"${r.startTime}","${r.endTime}","${siteCount}","${siteDetails}",`;
+                csv += `"${r.facilityName || ''}","${r.facilityArrivalTime}","${r.facilityEndTime}","****${r.facilityVehicleNumber}",`;
+                csv += `"${inspections}","${photoCount}","${new Date(r.submittedAt).toLocaleString('ja-JP')}"\n`;
+            });
+            
+            // CSVファイルとしてダウンロード（Excelで開ける）
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ドライバー日報集計_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            return true;
+        }
+
+        // ローカルストレージデータをクリア（開発用）
+        function clearAllData() {
+            if (confirm('全てのデータを削除しますか？この操作は元に戻せません。')) {
+                localStorage.removeItem('drivers');
+                localStorage.removeItem('reports');
+                location.reload();
+            }
+        }
+
+        // ESCキーでモーダルを閉じる
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDetailModal();
+                closeImageModal();
+            }
+        });
+
+        // ページ離脱時の確認（未保存データがある場合）
+        window.addEventListener('beforeunload', function(e) {
+            const form = document.getElementById('reportForm');
+            const formData = new FormData(form);
+            let hasData = false;
+            
+            for (let [key, value] of formData.entries()) {
+                if (value && key !== 'date') {
+                    hasData = true;
+                    break;
+                }
+            }
+            
+            if (hasData || currentReport.sites.length > 0 || currentReport.photos.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
