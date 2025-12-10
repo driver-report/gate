@@ -671,6 +671,180 @@
             display: none !important;
         }
 
+        /* 休憩時間管理のスタイル */
+        .break-time-section {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border: 3px solid #fdcb6e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .break-time-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .break-time-header h4 {
+            color: #d63031;
+            font-size: 1.3em;
+            margin: 0;
+        }
+
+        .break-remaining {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .break-remaining.complete {
+            background: #00b894;
+            color: white;
+        }
+
+        .break-remaining.warning {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+
+        .break-remaining.danger {
+            background: #d63031;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .break-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .break-btn {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .break-btn.start {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .break-btn.end {
+            background: linear-gradient(135deg, #55efc4, #00b894);
+            color: white;
+        }
+
+        .break-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .break-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .break-history {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .break-history h5 {
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .break-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            border-left: 4px solid #0984e3;
+        }
+
+        .break-item .time {
+            font-weight: bold;
+            color: #0984e3;
+        }
+
+        .break-item .duration {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .labor-time-summary {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .labor-time-summary h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .labor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .labor-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .labor-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .labor-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .labor-item.overtime .value {
+            color: #ff9800;
+        }
+
+        .labor-item.night .value {
+            color: #9c27b0;
+        }
+
+        .labor-item.holiday .value {
+            color: #f44336;
+        }
+
+
         /* モーダルスタイル */
         .modal {
             display: none;
@@ -1223,6 +1397,33 @@
                     </div>
 
                     <div class="form-section">
+                        <div class="break-time-section">
+                            <div class="break-time-header">
+                                <h4>⏰ 休憩時間管理（必須：1.5時間）</h4>
+                                <div class="break-remaining" id="breakRemaining">
+                                    残り: 1時間30分
+                                </div>
+                            </div>
+                            
+                            <div class="break-controls">
+                                <button type="button" class="break-btn start" id="breakStartBtn" onclick="startBreak()">
+                                    ☕ 休憩開始
+                                </button>
+                                <button type="button" class="break-btn end" id="breakEndBtn" onclick="endBreak()" disabled>
+                                    ✅ 休憩終了
+                                </button>
+                            </div>
+
+                            <div id="breakStatus" style="text-align: center; font-weight: bold; color: #d63031; margin: 10px 0;"></div>
+
+                            <div class="break-history" id="breakHistory" style="display: none;">
+                                <h5>📋 休憩履歴</h5>
+                                <div id="breakHistoryList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
                         <h3>産業廃棄物関連書類</h3>
                         <p style="margin-bottom: 15px; color: #666;">回収伝票・マニフェストの写真を何枚でもアップロードできます</p>
                         
@@ -1290,9 +1491,35 @@
                         </div>
                     </div>
 
+                    <div class="labor-time-summary" id="laborTimeSummary" style="display: none;">
+                        <h4>📊 労働時間集計</h4>
+                        <div class="labor-grid">
+                            <div class="labor-item">
+                                <div class="label">労働時間</div>
+                                <div class="value" id="totalLaborTime">-</div>
+                            </div>
+                            <div class="labor-item overtime">
+                                <div class="label">時間外労働</div>
+                                <div class="value" id="overtimeHours">-</div>
+                            </div>
+                            <div class="labor-item">
+                                <div class="label">休憩時間</div>
+                                <div class="value" id="breakTimeTotal">-</div>
+                            </div>
+                            <div class="labor-item night">
+                                <div class="label">深夜労働</div>
+                                <div class="value" id="nightHours">-</div>
+                            </div>
+                            <div class="labor-item holiday">
+                                <div class="label">休日労働</div>
+                                <div class="value" id="holidayHours">-</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary" onclick="clearForm()">クリア</button>
-                        <button type="submit" class="btn btn-primary">日報を提出</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">日報を提出</button>
                     </div>
                 </form>
 
@@ -1339,6 +1566,8 @@
                             <th>アルコール</th>
                             <th>業務開始</th>
                             <th>業務終了</th>
+                            <th>労働時間</th>
+                            <th>休憩時間</th>
                             <th>現場数</th>
                             <th>詳細</th>
                         </tr>
@@ -1359,7 +1588,9 @@
         let currentReport = {
             sites: [],
             photos: [],
-            locationData: {}
+            locationData: {},
+            breakTimes: [], // 休憩時間の記録
+            totalBreakMinutes: 0 // 合計休憩時間（分）
         };
 
         // 初期化
@@ -1480,6 +1711,9 @@
                 document.getElementById('endTimeDisplay').classList.remove('hidden');
                 
                 showAlert(location ? '業務終了時刻と位置情報を記録しました' : '業務終了時刻を記録しました（位置情報取得失敗）', 'success');
+                
+                // 労働時間サマリーを更新
+                updateLaborTimeSummary();
             });
         }
 
@@ -1532,6 +1766,195 @@
                 
                 showAlert(location ? '荷下ろし完了時刻と位置情報を記録しました' : '荷下ろし完了時刻を記録しました（位置情報取得失敗）', 'success');
             });
+        }
+
+
+        // 休憩時間管理
+        let breakStartTime = null;
+        const REQUIRED_BREAK_MINUTES = 90; // 1.5時間 = 90分
+
+        // 休憩残り時間を更新
+        function updateBreakRemaining() {
+            const remaining = REQUIRED_BREAK_MINUTES - currentReport.totalBreakMinutes;
+            const remainingEl = document.getElementById('breakRemaining');
+            
+            if (remaining <= 0) {
+                remainingEl.textContent = '✅ 休憩完了';
+                remainingEl.className = 'break-remaining complete';
+            } else {
+                const hours = Math.floor(remaining / 60);
+                const minutes = remaining % 60;
+                remainingEl.textContent = `残り: ${hours}時間${minutes}分`;
+                
+                if (remaining > 60) {
+                    remainingEl.className = 'break-remaining danger';
+                } else if (remaining > 30) {
+                    remainingEl.className = 'break-remaining warning';
+                } else {
+                    remainingEl.className = 'break-remaining danger';
+                }
+            }
+        }
+
+        // 休憩開始
+        function startBreak() {
+            const now = new Date();
+            breakStartTime = now;
+            
+            document.getElementById('breakStartBtn').disabled = true;
+            document.getElementById('breakEndBtn').disabled = false;
+            document.getElementById('breakStatus').textContent = '🕐 休憩中...';
+            
+            showAlert('休憩を開始しました', 'success');
+        }
+
+        // 休憩終了
+        function endBreak() {
+            if (!breakStartTime) {
+                showAlert('休憩が開始されていません', 'error');
+                return;
+            }
+            
+            const now = new Date();
+            const startTime = breakStartTime.toTimeString().slice(0, 5);
+            const endTime = now.toTimeString().slice(0, 5);
+            
+            // 休憩時間を計算（分）
+            const diffMs = now - breakStartTime;
+            const diffMinutes = Math.round(diffMs / 60000);
+            
+            // 休憩記録を追加
+            const breakRecord = {
+                startTime: startTime,
+                endTime: endTime,
+                duration: diffMinutes,
+                timestamp: now.toISOString()
+            };
+            
+            currentReport.breakTimes.push(breakRecord);
+            currentReport.totalBreakMinutes += diffMinutes;
+            
+            // UIを更新
+            document.getElementById('breakStartBtn').disabled = false;
+            document.getElementById('breakEndBtn').disabled = true;
+            document.getElementById('breakStatus').textContent = '';
+            
+            breakStartTime = null;
+            
+            // 休憩履歴を表示
+            displayBreakHistory();
+            updateBreakRemaining();
+            
+            // 労働時間サマリーを更新
+            updateLaborTimeSummary();
+            
+            const hours = Math.floor(diffMinutes / 60);
+            const minutes = diffMinutes % 60;
+            showAlert(`休憩を終了しました（${hours}時間${minutes}分）`, 'success');
+        }
+
+        // 休憩履歴を表示
+        function displayBreakHistory() {
+            const historyDiv = document.getElementById('breakHistory');
+            const listDiv = document.getElementById('breakHistoryList');
+            
+            if (currentReport.breakTimes.length === 0) {
+                historyDiv.style.display = 'none';
+                return;
+            }
+            
+            historyDiv.style.display = 'block';
+            listDiv.innerHTML = '';
+            
+            currentReport.breakTimes.forEach((br, index) => {
+                const hours = Math.floor(br.duration / 60);
+                const minutes = br.duration % 60;
+                
+                const item = document.createElement('div');
+                item.className = 'break-item';
+                item.innerHTML = `
+                    <div>
+                        <span style="color: #666;">休憩${index + 1}:</span>
+                        <span class="time">${br.startTime} - ${br.endTime}</span>
+                    </div>
+                    <div class="duration">${hours}時間${minutes}分</div>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+
+        // 労働時間を計算
+        function calculateLaborHours(startTime, endTime, breakMinutes) {
+            if (!startTime || !endTime) return 0;
+            
+            const [startHour, startMin] = startTime.split(':').map(Number);
+            const [endHour, endMin] = endTime.split(':').map(Number);
+            
+            let totalMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+            
+            // 日をまたぐ場合
+            if (totalMinutes < 0) {
+                totalMinutes += 24 * 60;
+            }
+            
+            // 休憩時間を引く
+            totalMinutes -= breakMinutes;
+            
+            return Math.max(0, totalMinutes / 60); // 時間に変換
+        }
+
+        // 深夜労働時間を計算（22:00-5:00）
+        function calculateNightHours(startTime, endTime) {
+            if (!startTime || !endTime) return 0;
+            
+            const [startHour, startMin] = startTime.split(':').map(Number);
+            const [endHour, endMin] = endTime.split(':').map(Number);
+            
+            let nightMinutes = 0;
+            
+            // 簡易計算：22:00-24:00 と 0:00-5:00 の範囲をチェック
+            for (let h = 0; h < 24; h++) {
+                if ((h >= 22 || h < 5)) {
+                    if ((startHour <= h && h < endHour) || 
+                        (endHour < startHour && (h >= startHour || h < endHour))) {
+                        nightMinutes += 60;
+                    }
+                }
+            }
+            
+            return nightMinutes / 60;
+        }
+
+        // 労働時間サマリーを更新
+        function updateLaborTimeSummary() {
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+            
+            if (!startTime || !endTime) return;
+            
+            const summaryDiv = document.getElementById('laborTimeSummary');
+            summaryDiv.style.display = 'block';
+            
+            // 労働時間計算
+            const totalHours = calculateLaborHours(startTime, endTime, currentReport.totalBreakMinutes);
+            const breakHours = currentReport.totalBreakMinutes / 60;
+            const nightHours = calculateNightHours(startTime, endTime);
+            
+            // 時間外労働（8時間超過分）
+            const overtimeHours = Math.max(0, totalHours - 8);
+            
+            // 休日判定（簡易：土日）
+            const date = new Date(document.getElementById('date').value);
+            const dayOfWeek = date.getDay();
+            const isHoliday = (dayOfWeek === 0 || dayOfWeek === 6);
+            const holidayHours = isHoliday ? totalHours : 0;
+            
+            // 表示
+            document.getElementById('totalLaborTime').textContent = totalHours.toFixed(2) + '時間';
+            document.getElementById('overtimeHours').textContent = overtimeHours.toFixed(2) + '時間';
+            document.getElementById('breakTimeTotal').textContent = breakHours.toFixed(2) + '時間';
+            document.getElementById('nightHours').textContent = nightHours.toFixed(2) + '時間';
+            document.getElementById('holidayHours').textContent = holidayHours.toFixed(2) + '時間';
         }
 
         function recordSiteArrival() {
@@ -1878,6 +2301,22 @@
                 return;
             }
             
+            // 休憩時間チェック
+            if (currentReport.totalBreakMinutes < REQUIRED_BREAK_MINUTES) {
+                const remaining = REQUIRED_BREAK_MINUTES - currentReport.totalBreakMinutes;
+                const hours = Math.floor(remaining / 60);
+                const minutes = remaining % 60;
+                if (!confirm(`休憩時間が${hours}時間${minutes}分不足しています。\nこのまま提出しますか？`)) {
+                    return;
+                }
+            }
+            
+            // 休憩中の場合
+            if (breakStartTime) {
+                showAlert('休憩を終了してから提出してください', 'error');
+                return;
+            }
+            
             const formData = new FormData(this);
             const report = {};
             
@@ -1900,6 +2339,23 @@
             report.sites = currentReport.sites;
             report.photos = currentReport.photos;
             report.locationData = currentReport.locationData;
+            report.breakTimes = currentReport.breakTimes;
+            
+            // 労働時間データを計算して追加
+            const laborHours = calculateLaborHours(report.startTime, report.endTime, currentReport.totalBreakMinutes);
+            const nightHours = calculateNightHours(report.startTime, report.endTime);
+            const overtimeHours = Math.max(0, laborHours - 8);
+            const date = new Date(report.date);
+            const isHoliday = (date.getDay() === 0 || date.getDay() === 6);
+            
+            report.laborData = {
+                totalLaborHours: laborHours,
+                overtimeHours: overtimeHours,
+                breakHours: currentReport.totalBreakMinutes / 60,
+                nightHours: nightHours,
+                holidayHours: isHoliday ? laborHours : 0,
+                isHoliday: isHoliday
+            };
             
             // 提出日時を追加
             report.submittedAt = new Date().toISOString();
@@ -1945,7 +2401,17 @@
             document.getElementById('facilityEndBtn').disabled = true;
             
             // 現場データをリセット
-            currentReport = { sites: [], photos: [], locationData: {} };
+            currentReport = { sites: [], photos: [], locationData: {}, breakTimes: [], totalBreakMinutes: 0 };
+            breakStartTime = null;
+            
+            // 休憩UIをリセット
+            document.getElementById('breakStartBtn').disabled = false;
+            document.getElementById('breakEndBtn').disabled = true;
+            document.getElementById('breakStatus').textContent = '';
+            document.getElementById('breakHistory').style.display = 'none';
+            document.getElementById('breakRemaining').textContent = '残り: 1時間30分';
+            document.getElementById('breakRemaining').className = 'break-remaining danger';
+            document.getElementById('laborTimeSummary').style.display = 'none';
             document.getElementById('sitesContainer').innerHTML = '';
             resetCurrentSite();
             
@@ -1983,6 +2449,9 @@
             filteredReports.forEach(report => {
                 const row = document.createElement('tr');
                 const siteCount = report.sites ? report.sites.length : 0;
+                const laborHours = report.laborData ? report.laborData.totalLaborHours.toFixed(1) : '-';
+                const breakHours = report.laborData ? report.laborData.breakHours.toFixed(1) : '-';
+                
                 row.innerHTML = `
                     <td>${report.date}</td>
                     <td>${report.driver}</td>
@@ -1990,6 +2459,8 @@
                     <td>${report.alcohol}</td>
                     <td>${report.startTime}</td>
                     <td>${report.endTime}</td>
+                    <td><strong>${laborHours}h</strong></td>
+                    <td>${breakHours}h</td>
                     <td>${siteCount}箇所</td>
                     <td><button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8em;" onclick="showReportDetailModal('${report.submittedAt}')">詳細</button></td>
                 `;
@@ -2290,6 +2761,7 @@
             
             let csv = '\uFEFF'; // BOM for UTF-8
             csv += '日付,ドライバー名,体調,昨晩のアルコール摂取,アルコール数値,業務開始時間,業務終了時間,';
+            csv += '労働時間,時間外労働,休憩時間,深夜労働,休日労働,';
             csv += '現場数,現場詳細,処理場名,処理場到着時間,荷下ろし終了時間,処理場車両ナンバー,日常点検項目,写真枚数,提出日時\n';
             
             filteredReports.forEach(report => {
@@ -2304,8 +2776,15 @@
                     ).join('|');
                 }
                 
+                const laborHours = report.laborData ? report.laborData.totalLaborHours.toFixed(2) : '0.00';
+                const overtimeHours = report.laborData ? report.laborData.overtimeHours.toFixed(2) : '0.00';
+                const breakHours = report.laborData ? report.laborData.breakHours.toFixed(2) : '0.00';
+                const nightHours = report.laborData ? report.laborData.nightHours.toFixed(2) : '0.00';
+                const holidayHours = report.laborData ? report.laborData.holidayHours.toFixed(2) : '0.00';
+                
                 csv += `"${report.date}","${report.driver}","${report.condition}","${report.alcohol}","${report.alcoholLevel}",`;
-                csv += `"${report.startTime}","${report.endTime}","${siteCount}","${siteDetails}",`;
+                csv += `"${report.startTime}","${report.endTime}","${laborHours}","${overtimeHours}","${breakHours}","${nightHours}","${holidayHours}",`;
+                csv += `"${siteCount}","${siteDetails}",`;
                 csv += `"${report.facilityName || ''}","${report.facilityArrivalTime}","${report.facilityEndTime}","****${report.facilityVehicleNumber}",`;
                 csv += `"${inspections}","${photoCount}","${new Date(report.submittedAt).toLocaleString('ja-JP')}"\n`;
             });
@@ -2327,6 +2806,7 @@
             // Excel互換のCSVを生成
             let csv = '\uFEFF'; // BOM for UTF-8 (Excelで正しく開くため)
             csv += '日付,ドライバー名,体調,昨晩のアルコール摂取,アルコール数値,業務開始時間,業務終了時間,';
+            csv += '労働時間,時間外労働,休憩時間,深夜労働,休日労働,';
             csv += '現場数,現場詳細,処理場名,処理場到着時間,荷下ろし終了時間,処理場車両ナンバー,日常点検項目,写真枚数,提出日時\n';
             
             // 全日報データをCSVに追加
@@ -2342,8 +2822,15 @@
                     ).join('|');
                 }
                 
+                const laborHours = r.laborData ? r.laborData.totalLaborHours.toFixed(2) : '0.00';
+                const overtimeHours = r.laborData ? r.laborData.overtimeHours.toFixed(2) : '0.00';
+                const breakHours = r.laborData ? r.laborData.breakHours.toFixed(2) : '0.00';
+                const nightHours = r.laborData ? r.laborData.nightHours.toFixed(2) : '0.00';
+                const holidayHours = r.laborData ? r.laborData.holidayHours.toFixed(2) : '0.00';
+                
                 csv += `"${r.date}","${r.driver}","${r.condition}","${r.alcohol}","${r.alcoholLevel}",`;
-                csv += `"${r.startTime}","${r.endTime}","${siteCount}","${siteDetails}",`;
+                csv += `"${r.startTime}","${r.endTime}","${laborHours}","${overtimeHours}","${breakHours}","${nightHours}","${holidayHours}",`;
+                csv += `"${siteCount}","${siteDetails}",`;
                 csv += `"${r.facilityName || ''}","${r.facilityArrivalTime}","${r.facilityEndTime}","****${r.facilityVehicleNumber}",`;
                 csv += `"${inspections}","${photoCount}","${new Date(r.submittedAt).toLocaleString('ja-JP')}"\n`;
             });
