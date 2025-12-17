@@ -572,6 +572,205 @@
             font-weight: bold;
         }
 
+
+        /* ログイン画面のスタイル */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #4a90e2;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .login-form-group {
+            margin-bottom: 25px;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .login-form-group select,
+        .login-form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form-group select:focus,
+        .login-form-group input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .login-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #1976d2;
+        }
+
+        .my-page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .my-page-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .my-page-header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+
+        .my-reports-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .my-reports-list h4 {
+            color: #4a90e2;
+            margin-bottom: 15px;
+        }
+
+        .report-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            border-color: #4a90e2;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        .report-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .report-card-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .report-card-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .report-card-body {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .report-card-body div {
+            margin-bottom: 5px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -1152,6 +1351,205 @@
             }
         }
 
+
+        /* ログイン画面のスタイル */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #4a90e2;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .login-form-group {
+            margin-bottom: 25px;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .login-form-group select,
+        .login-form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form-group select:focus,
+        .login-form-group input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .login-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #1976d2;
+        }
+
+        .my-page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .my-page-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .my-page-header p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+        }
+
+        .my-reports-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .my-reports-list h4 {
+            color: #4a90e2;
+            margin-bottom: 15px;
+        }
+
+        .report-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .report-card:hover {
+            border-color: #4a90e2;
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        .report-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .report-card-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4a90e2;
+        }
+
+        .report-card-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .report-card-body {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .report-card-body div {
+            margin-bottom: 5px;
+        }
+
         @media (max-width: 768px) {
             .modal-content {
                 width: 95%;
@@ -1185,12 +1583,70 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- ログイン画面 -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🚛 ドライバー日報システム</h1>
+                <p>ログインしてください</p>
+            </div>
+            
+            <div class="login-form-group">
+                <label for="loginDriver">ドライバー名を選択</label>
+                <select id="loginDriver">
+                    <option value="">選択してください</option>
+                    <option value="田島">田島</option>
+                    <option value="福田">福田</option>
+                    <option value="内田">内田</option>
+                    <option value="蛭川">蛭川</option>
+                    <option value="田里">田里</option>
+                    <option value="戸山">戸山</option>
+                    <option value="松橋">松橋</option>
+                    <option value="堀米">堀米</option>
+                    <option value="小暮">小暮</option>
+                    <option value="工藤">工藤</option>
+                    <option value="比嘉">比嘉</option>
+                    <option value="藤野">藤野</option>
+                    <option value="西條">西條</option>
+                    <option value="今井寿">今井寿</option>
+                    <option value="今井清">今井清</option>
+                    <option value="佐久間">佐久間</option>
+                    <option value="羽鳥">羽鳥</option>
+                    <option value="山中">山中</option>
+                    <option value="風間">風間</option>
+                    <option value="岩田">岩田</option>
+                    <option value="橋本">橋本</option>
+                    <option value="奥野">奥野</option>
+                    <option value="石垣">石垣</option>
+                    <option value="原田">原田</option>
+                    <option value="髙橋">髙橋</option>
+                    <option value="鈴木">鈴木</option>
+                    <option value="佐藤">佐藤</option>
+                    <option value="柳">柳</option>
+                    <option value="福島">福島</option>
+                </select>
+            </div>
+            
+            <button class="login-btn" onclick="login()">ログイン</button>
+            
+            <div class="login-info">
+                💡 ヒント: 一度ログインすると、ブラウザを閉じてもデータが保持されます
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainApp" style="display: none;">
         <div class="header">
             <h1>ドライバー日報システム</h1>
             <p>効率的な日報管理で安全運行をサポート</p>
+            <div class="user-info">
+                <span>👤 ログイン中:</span>
+                <span class="user-name" id="currentUserName"></span>
+                <button class="logout-btn" onclick="logout()">ログアウト</button>
+            </div>
             <div class="navigation">
                 <button class="nav-btn active" onclick="showSection('driver')">日報入力</button>
+                <button class="nav-btn" onclick="showSection('mypage')">マイページ</button>
                 <button class="nav-btn" onclick="showSection('admin')">管理者画面</button>
             </div>
         </div>
@@ -1526,6 +1982,24 @@
                 <div id="alert-container"></div>
             </div>
 
+            <div id="mypage-section" class="section">
+                <div class="my-page-header">
+                    <h3>📋 マイページ</h3>
+                    <p id="mypageUserName"></p>
+                </div>
+
+                <div class="my-reports-list">
+                    <h4>📊 自分の日報履歴</h4>
+                    <div id="myReportsList"></div>
+                </div>
+
+                <div class="form-row" style="justify-content: center;">
+                    <button type="button" class="btn btn-primary" onclick="exportMyReports()">
+                        📥 自分の日報をCSVエクスポート
+                    </button>
+                </div>
+            </div>
+
             <div id="admin-section" class="section">
                 <div class="driver-management">
                     <h3>ドライバー管理</h3>
@@ -1583,6 +2057,135 @@
         // データ管理
         let drivers = JSON.parse(localStorage.getItem('drivers')) || ['田島', '福田', '内田', '蛭川', '田里', '戸山', '松橋', '堀米', '小暮', '工藤', '比嘉', '藤野', '西條', '今井寿', '今井清', '佐久間', '羽鳥', '山中', '風間', '岩田', '橋本', '奥野', '石垣', '原田', '髙橋', '鈴木', '佐藤', '柳', '福島'];
         let reports = JSON.parse(localStorage.getItem('reports')) || [];
+        let currentUser = localStorage.getItem('currentUser') || null;
+        
+        // ログイン機能
+        function login() {
+            const driverName = document.getElementById('loginDriver').value;
+            
+            if (!driverName) {
+                alert('ドライバー名を選択してください');
+                return;
+            }
+            
+            // ログイン情報を保存
+            currentUser = driverName;
+            localStorage.setItem('currentUser', currentUser);
+            
+            // メイン画面を表示
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // ユーザー名を表示
+            document.getElementById('currentUserName').textContent = currentUser;
+            
+            // ドライバー選択を自動設定
+            document.getElementById('driver').value = currentUser;
+            
+            showAlert(`${currentUser}さん、ログインしました`, 'success');
+        }
+        
+        // ログアウト機能
+        function logout() {
+            if (confirm('ログアウトしますか？\n入力中のデータは保存されません。')) {
+                localStorage.removeItem('currentUser');
+                location.reload();
+            }
+        }
+        
+        // 自分の日報を取得
+        function getMyReports() {
+            if (!currentUser) return [];
+            return reports.filter(r => r.driver === currentUser).sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+        
+        // マイページの日報リストを表示
+        function displayMyReports() {
+            const myReports = getMyReports();
+            const listDiv = document.getElementById('myReportsList');
+            const userNameEl = document.getElementById('mypageUserName');
+            
+            userNameEl.textContent = `${currentUser}さんの日報一覧`;
+            
+            if (myReports.length === 0) {
+                listDiv.innerHTML = '<div class="no-data">まだ日報が登録されていません</div>';
+                return;
+            }
+            
+            listDiv.innerHTML = '';
+            
+            myReports.forEach(report => {
+                const card = document.createElement('div');
+                card.className = 'report-card';
+                card.onclick = () => showReportDetailModal(report.submittedAt);
+                
+                const laborHours = report.laborData ? report.laborData.totalLaborHours.toFixed(1) : '-';
+                const siteCount = report.sites ? report.sites.length : 0;
+                
+                card.innerHTML = `
+                    <div class="report-card-header">
+                        <div class="report-card-date">${report.date}</div>
+                        <div class="report-card-status status-completed">✅ 提出済み</div>
+                    </div>
+                    <div class="report-card-body">
+                        <div>⏰ 勤務時間: ${report.startTime} - ${report.endTime}</div>
+                        <div>💼 労働時間: ${laborHours}時間</div>
+                        <div>🏗️ 回収現場: ${siteCount}箇所</div>
+                        <div>🏭 処理場: ${report.facilityName || '-'}</div>
+                    </div>
+                `;
+                
+                listDiv.appendChild(card);
+            });
+        }
+        
+        // 自分の日報をCSVエクスポート
+        function exportMyReports() {
+            const myReports = getMyReports();
+            
+            if (myReports.length === 0) {
+                showAlert('エクスポートする日報がありません', 'error');
+                return;
+            }
+            
+            let csv = '\uFEFF'; // BOM for UTF-8
+            csv += '日付,ドライバー名,体調,昨晩のアルコール摂取,アルコール数値,業務開始時間,業務終了時間,';
+            csv += '労働時間,時間外労働,休憩時間,深夜労働,休日労働,';
+            csv += '現場数,現場詳細,処理場名,処理場到着時間,荷下ろし終了時間,処理場車両ナンバー,日常点検項目,写真枚数,提出日時\n';
+            
+            myReports.forEach(report => {
+                const inspections = report.inspection ? report.inspection.join('・') : '';
+                const siteCount = report.sites ? report.sites.length : 0;
+                const photoCount = report.photos ? report.photos.length : 0;
+                
+                let siteDetails = '';
+                if (report.sites) {
+                    siteDetails = report.sites.map((site, index) => 
+                        `現場${index + 1}:${site.siteName}(${site.arrivalTime}-${site.endTime})`
+                    ).join('|');
+                }
+                
+                const laborHours = report.laborData ? report.laborData.totalLaborHours.toFixed(2) : '0.00';
+                const overtimeHours = report.laborData ? report.laborData.overtimeHours.toFixed(2) : '0.00';
+                const breakHours = report.laborData ? report.laborData.breakHours.toFixed(2) : '0.00';
+                const nightHours = report.laborData ? report.laborData.nightHours.toFixed(2) : '0.00';
+                const holidayHours = report.laborData ? report.laborData.holidayHours.toFixed(2) : '0.00';
+                
+                csv += `"${report.date}","${report.driver}","${report.condition}","${report.alcohol}","${report.alcoholLevel}",`;
+                csv += `"${report.startTime}","${report.endTime}","${laborHours}","${overtimeHours}","${breakHours}","${nightHours}","${holidayHours}",`;
+                csv += `"${siteCount}","${siteDetails}",`;
+                csv += `"${report.facilityName || ''}","${report.facilityArrivalTime}","${report.facilityEndTime}","****${report.facilityVehicleNumber}",`;
+                csv += `"${inspections}","${photoCount}","${new Date(report.submittedAt).toLocaleString('ja-JP')}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${currentUser}_日報_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showAlert('CSVファイルをダウンロードしました', 'success');
+        }
         
         // 現在の日報データ
         let currentReport = {
@@ -1595,6 +2198,20 @@
 
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
+            // ログインチェック
+            if (currentUser) {
+                // ログイン済み
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('currentUserName').textContent = currentUser;
+                document.getElementById('driver').value = currentUser;
+            } else {
+                // 未ログイン
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
+                return;
+            }
+            
             // 今日の日付を設定
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
             
@@ -1624,6 +2241,8 @@
 
             if (section === 'admin') {
                 displayReports();
+            } else if (section === 'mypage') {
+                displayMyReports();
             }
         }
 
