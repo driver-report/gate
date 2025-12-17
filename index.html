@@ -2059,6 +2059,242 @@
         let reports = JSON.parse(localStorage.getItem('reports')) || [];
         let currentUser = localStorage.getItem('currentUser') || null;
         
+        // 下書き保存機能
+        function getDraftKey() {
+            const today = new Date().toISOString().split('T')[0];
+            return `draft_${currentUser}_${today}`;
+        }
+        
+        // 下書きを保存
+        function saveDraft() {
+            if (!currentUser) return;
+            
+            const draftData = {
+                date: document.getElementById('date').value,
+                driver: document.getElementById('driver').value,
+                condition: document.querySelector('input[name="condition"]:checked')?.value || '',
+                alcohol: document.querySelector('input[name="alcohol"]:checked')?.value || '',
+                alcoholLevel: document.querySelector('input[name="alcoholLevel"]:checked')?.value || '',
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                facilityName: document.getElementById('facilityName').value,
+                facilityArrivalTime: document.getElementById('facilityArrivalTime').value,
+                facilityEndTime: document.getElementById('facilityEndTime').value,
+                facilityVehicleNumber: document.getElementById('facilityVehicleNumber').value,
+                currentSiteName: document.getElementById('currentSiteName').value,
+                currentVehicleNumber: document.getElementById('currentVehicleNumber').value,
+                inspection: Array.from(document.querySelectorAll('input[name="inspection"]:checked')).map(cb => cb.value),
+                sites: currentReport.sites,
+                photos: currentReport.photos,
+                locationData: currentReport.locationData,
+                breakTimes: currentReport.breakTimes,
+                totalBreakMinutes: currentReport.totalBreakMinutes,
+                savedAt: new Date().toISOString()
+            };
+            
+            const draftKey = getDraftKey();
+            localStorage.setItem(draftKey, JSON.stringify(draftData));
+            
+            // 下書き保存インジケーターを表示
+            showDraftSaved();
+        }
+        
+        // 下書きを読み込み
+        function loadDraft() {
+            if (!currentUser) return false;
+            
+            const draftKey = getDraftKey();
+            const draftJson = localStorage.getItem(draftKey);
+            
+            if (!draftJson) return false;
+            
+            try {
+                const draft = JSON.parse(draftJson);
+                
+                // 基本情報を復元
+                document.getElementById('date').value = draft.date || new Date().toISOString().split('T')[0];
+                document.getElementById('driver').value = draft.driver || currentUser;
+                
+                // ラジオボタンを復元
+                if (draft.condition) {
+                    const conditionRadio = document.querySelector(`input[name="condition"][value="${draft.condition}"]`);
+                    if (conditionRadio) conditionRadio.checked = true;
+                }
+                
+                if (draft.alcohol) {
+                    const alcoholRadio = document.querySelector(`input[name="alcohol"][value="${draft.alcohol}"]`);
+                    if (alcoholRadio) alcoholRadio.checked = true;
+                }
+                
+                if (draft.alcoholLevel) {
+                    const alcoholLevelRadio = document.querySelector(`input[name="alcoholLevel"][value="${draft.alcoholLevel}"]`);
+                    if (alcoholLevelRadio) alcoholLevelRadio.checked = true;
+                }
+                
+                // 時刻を復元
+                if (draft.startTime) {
+                    document.getElementById('startTime').value = draft.startTime;
+                    document.getElementById('startTimeDisplay').innerHTML = `
+                        開始時刻: ${draft.startTime}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                    document.getElementById('startTimeDisplay').classList.remove('hidden');
+                    document.getElementById('endBtn').disabled = false;
+                }
+                
+                if (draft.endTime) {
+                    document.getElementById('endTime').value = draft.endTime;
+                    document.getElementById('endTimeDisplay').innerHTML = `
+                        終了時刻: ${draft.endTime}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                    document.getElementById('endTimeDisplay').classList.remove('hidden');
+                }
+                
+                // 処理場情報を復元
+                if (draft.facilityName) document.getElementById('facilityName').value = draft.facilityName;
+                if (draft.facilityArrivalTime) {
+                    document.getElementById('facilityArrivalTime').value = draft.facilityArrivalTime;
+                    document.getElementById('facilityArrivalDisplay').innerHTML = `
+                        到着時刻: ${draft.facilityArrivalTime}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                    document.getElementById('facilityArrivalDisplay').classList.remove('hidden');
+                    document.getElementById('facilityEndBtn').disabled = false;
+                }
+                if (draft.facilityEndTime) {
+                    document.getElementById('facilityEndTime').value = draft.facilityEndTime;
+                    document.getElementById('facilityEndDisplay').innerHTML = `
+                        完了時刻: ${draft.facilityEndTime}<br>
+                        <span style="font-size: 0.85em; color: #666;">📍 位置情報取得済み</span>
+                    `;
+                    document.getElementById('facilityEndDisplay').classList.remove('hidden');
+                }
+                if (draft.facilityVehicleNumber) document.getElementById('facilityVehicleNumber').value = draft.facilityVehicleNumber;
+                
+                // 現場情報を復元
+                if (draft.currentSiteName) document.getElementById('currentSiteName').value = draft.currentSiteName;
+                if (draft.currentVehicleNumber) document.getElementById('currentVehicleNumber').value = draft.currentVehicleNumber;
+                
+                // 点検項目を復元
+                if (draft.inspection && draft.inspection.length > 0) {
+                    draft.inspection.forEach(value => {
+                        const checkbox = document.querySelector(`input[name="inspection"][value="${value}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+                }
+                
+                // 現場データを復元
+                if (draft.sites) {
+                    currentReport.sites = draft.sites;
+                    displayCompletedSites();
+                }
+                
+                // 写真データを復元
+                if (draft.photos) {
+                    currentReport.photos = draft.photos;
+                    displayPhotoPreview();
+                    updatePhotoCount();
+                }
+                
+                // 位置情報を復元
+                if (draft.locationData) {
+                    currentReport.locationData = draft.locationData;
+                }
+                
+                // 休憩時間データを復元
+                if (draft.breakTimes) {
+                    currentReport.breakTimes = draft.breakTimes;
+                    currentReport.totalBreakMinutes = draft.totalBreakMinutes || 0;
+                    displayBreakHistory();
+                    updateBreakRemaining();
+                }
+                
+                // 労働時間サマリーを更新
+                if (draft.endTime) {
+                    updateLaborTimeSummary();
+                }
+                
+                // 下書きから復元したことを通知
+                const savedDate = new Date(draft.savedAt);
+                showAlert(`下書きを復元しました（保存日時: ${savedDate.toLocaleString('ja-JP')}）`, 'success');
+                
+                return true;
+            } catch (error) {
+                console.error('下書き読み込みエラー:', error);
+                return false;
+            }
+        }
+        
+        // 下書きを削除
+        function clearDraft() {
+            if (!currentUser) return;
+            const draftKey = getDraftKey();
+            localStorage.removeItem(draftKey);
+        }
+        
+        // 下書き保存インジケーター
+        function showDraftSaved() {
+            let indicator = document.getElementById('draftIndicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'draftIndicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: #00b894;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-size: 0.9em;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                `;
+                indicator.textContent = '✓ 自動保存しました';
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.style.opacity = '1';
+            
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+            }, 2000);
+        }
+        
+        // 自動保存を設定（入力時に自動保存）
+        function setupAutoSave() {
+            // フォーム要素が変更されたら自動保存
+            const form = document.getElementById('reportForm');
+            if (!form) return;
+            
+            // 全ての入力要素に変更イベントを設定
+            const inputs = form.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    saveDraft();
+                });
+                
+                // テキスト入力は入力中も保存
+                if (input.type === 'text' || input.type === 'textarea') {
+                    let timeout;
+                    input.addEventListener('input', () => {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => {
+                            saveDraft();
+                        }, 1000); // 1秒後に保存
+                    });
+                }
+            });
+            
+            // 定期的に自動保存（30秒ごと）
+            setInterval(() => {
+                saveDraft();
+            }, 30000);
+        }
+        
         // ログイン機能
         function login() {
             const driverName = document.getElementById('loginDriver').value;
@@ -2227,6 +2463,12 @@
             
             // 現場入力の検証
             setupSiteValidation();
+            
+            // 自動保存を設定
+            setupAutoSave();
+            
+            // 下書きを読み込み
+            loadDraft();
         });
 
         // セクション切り替え
@@ -2306,6 +2548,9 @@
                 document.getElementById('endBtn').disabled = false;
                 
                 showAlert(location ? '業務開始時刻と位置情報を記録しました' : '業務開始時刻を記録しました（位置情報取得失敗）', 'success');
+                
+                // 自動保存
+                saveDraft();
             });
         }
 
@@ -2333,6 +2578,9 @@
                 
                 // 労働時間サマリーを更新
                 updateLaborTimeSummary();
+                
+                // 自動保存
+                saveDraft();
             });
         }
 
@@ -2360,6 +2608,9 @@
                 document.getElementById('facilityEndBtn').disabled = false;
                 
                 showAlert(location ? '処理場到着時刻と位置情報を記録しました' : '処理場到着時刻を記録しました（位置情報取得失敗）', 'success');
+                
+                // 自動保存
+                saveDraft();
             });
         }
 
@@ -2384,6 +2635,9 @@
                 document.getElementById('facilityEndDisplay').classList.remove('hidden');
                 
                 showAlert(location ? '荷下ろし完了時刻と位置情報を記録しました' : '荷下ろし完了時刻を記録しました（位置情報取得失敗）', 'success');
+                
+                // 自動保存
+                saveDraft();
             });
         }
 
@@ -2425,6 +2679,9 @@
             document.getElementById('breakStatus').textContent = '🕐 休憩中...';
             
             showAlert('休憩を開始しました', 'success');
+            
+            // 自動保存
+            saveDraft();
         }
 
         // 休憩終了
@@ -2470,6 +2727,9 @@
             const hours = Math.floor(diffMinutes / 60);
             const minutes = diffMinutes % 60;
             showAlert(`休憩を終了しました（${hours}時間${minutes}分）`, 'success');
+            
+            // 自動保存
+            saveDraft();
         }
 
         // 休憩履歴を表示
@@ -2601,6 +2861,9 @@
                 currentReport.currentSiteArrival = timeString;
                 
                 showAlert(location ? '現場到着時刻と位置情報を記録しました' : '現場到着時刻を記録しました（位置情報取得失敗）', 'success');
+                
+                // 自動保存
+                saveDraft();
             });
         }
 
@@ -2649,6 +2912,9 @@
                 resetCurrentSite();
                 
                 showAlert(endLocation ? `現場「${siteName}」を完了しました（位置情報記録済み）` : `現場「${siteName}」を完了しました`, 'success');
+                
+                // 自動保存
+                saveDraft();
             });
         }
 
@@ -2747,6 +3013,9 @@
                         currentReport.photos.push(photoData);
                         displayPhotoPreview();
                         updatePhotoCount();
+                        
+                        // 自動保存
+                        saveDraft();
                     };
                     reader.readAsDataURL(file);
                 } else {
@@ -3010,7 +3279,7 @@
         });
 
         // フォームクリア
-        function clearForm() {
+        function clearForm(keepDraft = false) {
             document.getElementById('reportForm').reset();
             document.getElementById('date').value = new Date().toISOString().split('T')[0];
             
